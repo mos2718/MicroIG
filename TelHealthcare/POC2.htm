@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>POC 照護執行監控站 (PC 視圖)</title>
+    <style>
+        :root {
+            --primary: #0984e3;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --bg: #dfe6e9;
+        }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        
+        .dashboard-header { background: white; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* 卡片容器：在 PC 上自動並排 */
+        .poc-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+        }
+
+        /* 縮減後的 POC 執行卡片 */
+        .poc-card { 
+            background: white; 
+            width: 380px; /* 固定寬度，適合並排 */
+            border-radius: 10px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--primary);
+        }
+
+        .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .patient-name { font-weight: bold; font-size: 1.1em; }
+        
+        .card-body { padding: 12px; flex-grow: 1; }
+
+        /* 緊湊型步驟樣式 */
+        .mini-step { margin-bottom: 12px; padding: 8px; border: 1px solid #f1f1f1; border-radius: 6px; }
+        .step-title { font-size: 0.85em; font-weight: bold; color: #636e72; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        
+        .vital-row { display: flex; gap: 8px; }
+        .vital-tag { background: #f1f2f6; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; flex: 1; text-align: center; }
+        .value-alert { color: var(--danger); font-weight: bold; }
+
+        .med-box { display: flex; align-items: center; gap: 10px; background: #fffde7; padding: 6px; border-radius: 4px; font-size: 0.9em; }
+        .med-icon { width: 40px; height: 40px; background: #ddd; border-radius: 4px; }
+
+        /* 操作按鈕縮減 */
+        .card-footer { padding: 10px; display: flex; gap: 8px; background: #f8f9fa; }
+        .btn-s { flex: 1; padding: 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
+        .btn-call { background: var(--warning); color: #2d3436; }
+        .btn-done { background: var(--success); color: white; }
+        .btn-disabled { background: #dfe6e9; color: #b2bec3; cursor: not-allowed; }
+
+        /* 狀態標籤 */
+        .status-pill { font-size: 0.75em; padding: 2px 6px; border-radius: 10px; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-header">
+    <h2 style="margin:0;">POC 現場照護並排監控 (模擬沙箱)</h2>
+    <div>
+        <span style="margin-right:20px;">當前班別：晚班</span>
+        <button style="padding:5px 15px;">切換場域</button>
+    </div>
+</div>
+
+<div class="poc-grid">
+
+    <div class="poc-card">
+        <div class="card-header">
+            <span class="patient-name">王○民 (A052)</span>
+            <span class="status-pill" style="background:var(--primary)">量測中</span>
+        </div>
+        <div class="card-body">
+            <div class="mini-step">
+                <div class="step-title">步驟 1: 身分核對 <span>✅ 成功</span></div>
+            </div>
+            <div class="mini-step" style="background:#fff5f5; border-color:#fab1a0">
+                <div class="step-title">步驟 2: 生理量測 <span style="color:var(--danger)">⚠️ 異常</span></div>
+                <div class="vital-row">
+                    <div class="vital-tag">BP: <span class="value-alert">168/95</span></div>
+                    <div class="vital-tag">SpO2: 94%</div>
+                </div>
+            </div>
+            <div class="mini-step">
+                <div class="step-title">步驟 3: 藥品核對</div>
+                <div class="med-box">
+                    <div class="med-icon"></div>
+                    <div>脈優片 5mg (Amlodipine)<br><small>待掃描...</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn-s btn-call">📞 呼叫護理師</button>
+            <button class="btn-s btn-disabled">確認給藥</button>
+        </div>
+    </div>
+
+    <div class="poc-card" style="border-top-color: var(--success);">
+        <div class="card-header">
+            <span class="patient-name">李○華 (B012)</span>
+            <span class="status-pill" style="background:var(--success)">待確認</span>
+        </div>
+        <div class="card-body">
+            <div class="mini-step"><div class="step-title">步驟 1: 身分核對 <span>✅ 成功</span></div></div>
+            <div class="mini-step">
+                <div class="step-title">步驟 2: 生理量測 <span>✅ 正常</span></div>
+                <div class="vital-row">
+                    <div class="vital-tag">BP: 124/80</div>
+                    <div class="vital-tag">SpO2: 98%</div>
+                </div>
+            </div>
+            <div class="mini-step">
+                <div class="step-title">步驟 3: 藥品核對 <span>✅ 已核對</span></div>
+                <div class="med-box">
+                    <div class="med-icon" style="background:#74b9ff"></div>
+                    <div>必理痛 500mg<br><small>已掃描 1 錠</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn-s btn-call">📞 諮詢</button>
+            <button class="btn-s btn-done">確認給藥</button>
+        </div>
+    </div>
+
+    <div class="poc-card" style="border-top-color: var(--danger); animation: blink 1s infinite alternate;">
+        <div class="card-header">
+            <span class="patient-name">趙○生 (C009)</span>
+            <span class="status-pill" style="background:var(--danger)">緊急</span>
+        </div>
+        <div class="card-body">
+            <div class="mini-step" style="background:#fab1a0">
+                <div class="step-title">生理警報</div>
+                <div class="vital-row">
+                    <div class="vital-tag">SpO2: <span class="value-alert">84% ↓</span></div>
+                    <div class="vital-tag">呼吸: 28bpm</div>
+                </div>
+            </div>
+            <p style="font-size:0.85em; color:var(--danger); font-weight:bold;">! 遠端護理師正在啟動視訊...</p>
+        </div>
+        <div class="card-footer">
+            <button class="btn-s btn-call" style="background:var(--danger); color:white;">⚡ 接入視訊</button>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    @keyframes blink { from { box-shadow: 0 0 0px var(--danger); } to { box-shadow: 0 0 15px var(--danger); } }
+</style>
+
+</body>
+</html>

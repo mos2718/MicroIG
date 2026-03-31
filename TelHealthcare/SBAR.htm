@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>遠端專科醫師急診會診系統</title>
+    <style>
+        :root {
+            --emergency-red: #d63031;
+            --doctor-blue: #0984e3;
+            --dark-bg: #1e272e;
+            --card-bg: #ffffff;
+        }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* 頂部緊急狀態列 */
+        .emergency-header { background: var(--emergency-red); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; animation: blink 2s infinite; }
+        
+        .main-container { display: flex; flex: 1; overflow: hidden; gap: 10px; padding: 10px; }
+
+        /* 左欄：現場視訊與病人簡介 */
+        .panel-left { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .video-feed { background: black; border-radius: 8px; flex: 1; position: relative; overflow: hidden; }
+        .video-label { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 4px; }
+        .patient-mini-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* 中欄：生理數據趨勢 (重點區) */
+        .panel-center { flex: 1.5; background: white; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; }
+        .vitals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .vital-monitor { background: #000; color: #00ff00; padding: 15px; border-radius: 6px; font-family: 'Courier New', monospace; }
+        .vital-value { font-size: 2.5em; font-weight: bold; }
+        .trend-chart { flex: 1; border: 1px solid #eee; margin-top: 10px; background: #fafafa; display: flex; align-items: center; justify-content: center; color: #999; }
+
+        /* 右欄：護理回報 (SBAR) 與指令下達 */
+        .panel-right { flex: 1.2; display: flex; flex-direction: column; gap: 10px; }
+        .sbar-report { background: #fff9db; border-left: 5px solid #f1c40f; padding: 15px; border-radius: 8px; flex: 1; overflow-y: auto; }
+        .order-entry { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        
+        .sbar-title { font-weight: bold; color: #856404; margin-bottom: 5px; border-bottom: 1px solid #ffeeba; }
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 8px; margin: 10px 0; height: 80px; }
+        
+        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-order { background: var(--doctor-blue); color: white; margin-bottom: 5px; }
+        .btn-transfer { background: var(--emergency-red); color: white; }
+
+        @keyframes blink {
+            0% { opacity: 1; } 50% { opacity: 0.85; } 100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="emergency-header">
+    <strong>🔴 緊急會診中：呼吸衰竭疑慮</strong>
+    <span>會診醫師：張大華 醫師 (胸腔內科) | 在線護理師：陳小美 (個案管理師)</span>
+    <button style="background:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">結束會診</button>
+</div>
+
+<div class="main-container">
+    
+    <div class="panel-left">
+        <div class="video-feed">
+            <div style="color:white; text-align:center; margin-top:100px;">[ 現場即時視訊串流 ]</div>
+            <div class="video-label">遠端家屬端/照護員</div>
+        </div>
+        <div class="patient-mini-card">
+            <h3 style="margin:0 0 10px 0;">王○民 (Male, 72y)</h3>
+            <p style="font-size: 0.9em; color: #555;">病史：COPD, Hypertension<br>過敏：Penicillin</p>
+        </div>
+    </div>
+
+    <div class="panel-center">
+        <h3>即時監測數據 (近 30 分鐘趨勢)</h3>
+        <div class="vitals-grid">
+            <div class="vital-monitor" style="color: #ff7675;">
+                <div>SpO2 (血氧)</div>
+                <div class="vital-value">84% ↓</div>
+            </div>
+            <div class="vital-monitor" style="color: #55efc4;">
+                <div>Resp (呼吸)</div>
+                <div class="vital-value">28 bpm ↑</div>
+            </div>
+        </div>
+        <div class="trend-chart">
+            [ 此處動態呈現 FHIR Observation 歷史趨勢圖表 ]
+        </div>
+    </div>
+
+    <div class="panel-right">
+        <div class="sbar-report">
+            <h4 style="margin:0 0 10px 0; color:var(--emergency-red);">📋 護理師 SBAR 彙整回報</h4>
+            <div class="sbar-title">S (現況)</div>
+            <p style="font-size:0.9em;">病患於 18:20 出現明顯喘鳴聲，血氧從 94% 快速降至 84%。</p>
+            <div class="sbar-title">B (背景)</div>
+            <p style="font-size:0.9em;">長期 COPD 病史，今日下午有輕微咳嗽。</p>
+            <div class="sbar-title">A (評估)</div>
+            <p style="font-size:0.9em;">疑似急性發作或痰液阻塞，意識尚清楚但焦慮。</p>
+            <div class="sbar-title">R (建議)</div>
+            <p style="font-size:0.9em;">請醫師評估是否調整支氣管擴張劑或啟動轉診。</p>
+        </div>
+
+        <div class="order-entry">
+            <strong>⚡ 醫師即時處置指令 (Orders)</strong>
+            <textarea placeholder="輸入給藥指令或處置建議..."></textarea>
+            <button class="btn btn-order">確認下達醫囑 (電子簽章)</button>
+            <button class="btn btn-transfer">啟動綠色通道轉診 (EMS)</button>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

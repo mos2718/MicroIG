@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>HaH 遠端護理協作工作站</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --bg: #f4f7f6;
+        }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        
+        .patient-card { background: white; border-radius: 12px; border-left: 8px solid #ccc; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; }
+        .card-urgent { border-left-color: var(--danger); animation: pulse 2s infinite; }
+        .card-waiting { border-left-color: var(--warning); }
+        .card-done { border-left-color: var(--success); opacity: 0.8; }
+
+        .patient-info { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .patient-name { font-size: 1.2em; font-weight: bold; }
+        .carer-name { font-size: 0.9em; color: #666; }
+
+        .vitals-box { display: flex; gap: 10px; margin: 10px 0; font-size: 0.9em; }
+        .vital-item { background: #f9f9f9; padding: 5px 10px; border-radius: 4px; border: 1px solid #eee; }
+        .value-alert { color: var(--danger); font-weight: bold; }
+
+        .meds-list { background: #fff8f0; padding: 10px; border-radius: 6px; margin: 10px 0; }
+        .med-item { display: flex; align-items: center; gap: 8px; font-size: 0.95em; margin-bottom: 5px; }
+
+        .action-zone { display: flex; gap: 10px; margin-top: 15px; }
+        button { border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-video { background: var(--info); color: white; }
+        .btn-approve { background: var(--success); color: white; }
+        .btn-chat { background: var(--primary); color: white; }
+
+        .status-badge { position: absolute; top: 15px; right: 15px; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; color: white; }
+        .bg-danger { background: var(--danger); }
+        .bg-warning { background: var(--warning); }
+        .bg-success { background: var(--success); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h2 style="margin:0;">晚餐後藥事監控總覽 (18:00 - 20:00)</h2>
+        <span style="color:#666;">專業護理師：陳小美 | 在線監測病人數：12 名</span>
+    </div>
+    <div>
+        <span class="vital-item">系統狀態：運作正常</span>
+        <button class="btn-chat">全體訊息通報</button>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    
+    <div class="patient-card card-urgent">
+        <span class="status-badge bg-danger">生理值異常</span>
+        <div class="patient-info">
+            <div>
+                <div class="patient-name">王大同 (A052)</div>
+                <div class="carer-name">照護員：張三</div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-size: 0.8em; color: #999;">請求時間</div>
+                <div>18:42</div>
+            </div>
+        </div>
+        <div class="vitals-box">
+            <div class="vital-item">血壓: <span class="value-alert">168/95</span></div>
+            <div class="vital-item">脈搏: 88</div>
+        </div>
+        <div class="meds-list">
+            <strong>待核藥品：</strong>
+            <div class="med-item">💊 脈優片 5mg (Amlodipine)</div>
+            <div class="med-item">💊 循利寧 (Ginkgo extract)</div>
+            <div style="color: var(--danger); font-size: 0.85em; margin-top:5px;">⚠️ 警告：血壓過高，建議確認病人意識後再行給藥。</div>
+        </div>
+        <div class="action-zone">
+            <button class="btn-video">立即視訊引導</button>
+            <button class="btn-chat">傳送指示</button>
+        </div>
+    </div>
+
+    <div class="patient-card card-waiting">
+        <span class="status-badge bg-warning">等待授權 (PRN)</span>
+        <div class="patient-info">
+            <div>
+                <div class="patient-name">李秀蘭 (B012)</div>
+                <div class="carer-name">照護員：李四</div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-size: 0.8em; color: #999;">請求時間</div>
+                <div>18:50</div>
+            </div>
+        </div>
+        <div class="vitals-box">
+            <div class="vital-item">血壓: 124/78</div>
+            <div class="vital-item">疼痛評分: <span class="value-alert">7 (劇烈)</span></div>
+        </div>
+        <div class="meds-list">
+            <strong>PRN 申請：</strong>
+            <div class="med-item">💊 必理痛 (Acetaminophen) 500mg</div>
+            <p style="font-size: 0.85em; color: #555;">原因：患者主訴術後傷口抽痛感強烈。</p>
+        </div>
+        <div class="action-zone">
+            <button class="btn-approve">核准給藥</button>
+            <button class="btn-video">視訊評估</button>
+        </div>
+    </div>
+
+    <div class="patient-card card-done">
+        <span class="status-badge bg-success">已完成</span>
+        <div class="patient-info">
+            <div>
+                <div class="patient-name">趙老先生 (C009)</div>
+                <div class="carer-name">照護員：王五</div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-size: 0.8em; color: #999;">完成時間</div>
+                <div>18:30</div>
+            </div>
+        </div>
+        <div class="vitals-box">
+            <div class="vital-item">血壓: 118/75</div>
+            <div class="vital-item">睡眠紀錄: 正常</div>
+        </div>
+        <div class="meds-list">
+            <div class="med-item">✅ 晚餐後常規藥物 (4顆) 已服用</div>
+            <div class="med-item">✅ 傷口照片已上傳 (點擊查看)</div>
+        </div>
+        <div class="action-zone">
+            <button style="background:#eee; color:#666;">查看紀錄</button>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

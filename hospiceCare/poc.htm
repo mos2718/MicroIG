@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>居家安寧照護助手 - 家屬端 POC</title>
+    <style>
+        :root {
+            --soft-blue: #e3f2fd;
+            --action-orange: #ff9800;
+            --safe-green: #4caf50;
+            --text-dark: #333;
+        }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: #f9f9f9; margin: 0; padding-bottom: 80px; }
+        
+        /* 頂部病人狀況摘要 */
+        .status-header { background: linear-gradient(135deg, #64b5f6, #2196f3); color: white; padding: 20px; text-align: center; border-radius: 0 0 20px 20px; }
+        .patient-name { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; }
+
+        /* 指令提醒區 (來自遠端 ServiceRequest) */
+        .task-alert { background: #fff3e0; border-left: 5px solid var(--action-orange); margin: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .task-title { color: #e65100; font-weight: bold; display: flex; align-items: center; }
+        
+        /* 功能按鈕網格 */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .action-card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #eee; }
+        .action-card img { width: 40px; margin-bottom: 10px; }
+        .action-card span { display: block; font-size: 0.95rem; color: var(--text-dark); }
+
+        /* 快速記錄區 */
+        .record-section { background: white; margin: 15px; padding: 20px; border-radius: 12px; }
+        .pain-slider { width: 100%; margin: 20px 0; }
+        .btn-submit { background: var(--safe-green); color: white; border: none; width: 100%; padding: 12px; border-radius: 25px; font-size: 1rem; cursor: pointer; }
+
+        /* 底部導航 */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; }
+        .nav-icon { text-align: center; color: #888; font-size: 0.8rem; }
+        .nav-icon.active { color: var(--2196f3); }
+
+        /* AI 助手懸浮球 */
+        .ai-fab { position: fixed; right: 20px; bottom: 100px; background: #9c27b0; color: white; width: 60px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 0.8rem; text-align: center; line-height: 1.2; }
+    </style>
+</head>
+<body>
+
+    <div class="status-header">
+        <div class="patient-name">王○明 爺爺</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">目前狀態：呼吸平穩 · 睡眠中</div>
+    </div>
+
+    <div class="task-alert">
+        <div class="task-title">🔔 護理師回覆指示 (10:30)</div>
+        <p style="margin: 8px 0; font-size: 0.95rem;">爺爺目前疼痛增加，請協助「翻身並墊高枕頭」，執行後請拍照回傳紀錄。</p>
+        <button onclick="alert('已確認執行任務')" style="background: var(--action-orange); color: white; border: none; padding: 5px 15px; border-radius: 4px;">我已完成</button>
+    </div>
+
+    <div class="action-grid">
+        <div class="action-card" onclick="alert('開啟生理量測藍牙連線')">
+            <div style="font-size: 2rem;">🌡️</div>
+            <span>上傳生理數據</span>
+        </div>
+        <div class="action-card" onclick="alert('開啟傷口拍照功能')">
+            <div style="font-size: 2rem;">📸</div>
+            <span>傷口/皮膚拍照</span>
+        </div>
+        <div class="action-card" onclick="alert('顯示藥盒給藥提醒')">
+            <div style="font-size: 2rem;">💊</div>
+            <span>用藥確認</span>
+        </div>
+        <div class="action-card" onclick="alert('撥打視訊電話給護理師')">
+            <div style="font-size: 2rem;">📞</div>
+            <span>遠端諮詢</span>
+        </div>
+    </div>
+
+    <div class="record-section">
+        <h3 style="margin-top:0;">目前疼痛觀察</h3>
+        <p style="font-size: 0.85rem; color: #666;">滑動選取病人感受 (0 無痛 ~ 10 極痛)</p>
+        <input type="range" min="0" max="10" value="3" class="pain-slider" id="painRange">
+        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px;">
+            <span>0</span><span>5</span><span>10</span>
+        </div>
+        <button class="btn-submit" onclick="submitObservation()">送出評估數據</button>
+    </div>
+
+    <div class="ai-fab">
+        AI<br>助手
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-icon active">🏠<br>首頁</div>
+        <div class="nav-icon">📖<br>照護百科</div>
+        <div class="nav-icon">📊<br>歷史趨勢</div>
+        <div class="nav-icon">💬<br>訊息傳遞</div>
+    </div>
+
+    <script>
+        function submitObservation() {
+            const val = document.getElementById('painRange').value;
+            alert('已成功傳送疼痛評分 (' + val + ') 至護理站。FHIR Observation 已生成。');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaH 近端照護執行系統</title>
+    <style>
+        :root {
+            --primary: #00a8ff;
+            --success: #4cd137;
+            --danger: #e84118;
+            --warning: #fbc531;
+            --dark: #2f3640;
+            --light: #f5f6fa;
+        }
+        body { font-family: sans-serif; background: var(--light); margin: 0; padding: 0; }
+        .app-bar { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        
+        .container { padding: 15px; margin-bottom: 80px; }
+        
+        .step-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .step-header { display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .step-number { background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-weight: bold; }
+        
+        .scan-btn { width: 100%; padding: 15px; background: var(--dark); color: white; border: none; border-radius: 8px; font-size: 1.1em; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        .medication-verify { display: flex; gap: 15px; align-items: center; background: #fff8e1; padding: 10px; border-radius: 8px; }
+        .med-img { width: 80px; height: 80px; background: #ddd; border-radius: 4px; object-fit: cover; }
+        
+        .vital-input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .vital-field { background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        .vital-label { font-size: 0.85em; color: #666; }
+        .vital-value { font-size: 1.2em; font-weight: bold; width: 100%; border: none; background: transparent; }
+
+        .alert-box { background: #ffeaa7; border-left: 5px solid var(--warning); padding: 10px; margin-top: 10px; font-size: 0.9em; display: none; }
+        
+        /* 底部導覽/操作列 */
+        .bottom-actions { position: fixed; bottom: 0; width: 100%; background: white; padding: 10px; display: flex; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 1em; }
+        .btn-call { background: var(--warning); color: var(--dark); }
+        .btn-submit { background: var(--success); color: white; }
+        
+        .status-tag { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px; }
+        .status-verified { background: var(--success); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="app-bar">
+    <div><strong>晚餐後給藥紀錄</strong></div>
+    <div style="font-size: 0.8em;">病人：王○民 (A052)</div>
+</div>
+
+<div class="container">
+    
+    <div class="step-card">
+        <div class="step-header">
+            <div class="step-number">1</div>
+            <strong>確認病人身分</strong>
+            <span class="status-tag status-verified">已核對</span>
+        </div>
+        <button class="scan-btn">📷 掃描病人手環條碼</button>
+        <div style="font-size: 0.9em; color: #27ae60;">✓ 王○民 (72歲) - 身分核對完全正確</div>
+    </div>
+
+    <div class="step-card">
+        <div class="step-header">
+            <div class="step-number">2</div>
+            <strong>給藥前評估 (生理量測)</strong>
+        </div>
+        <div class="vital-input-group">
+            <div class="vital-field">
+                <div class="vital-label">血壓 (mmHg)</div>
+                <input type="text" class="vital-value" value="168/95" style="color: var(--danger);">
+            </div>
+            <div class="vital-field">
+                <div class="vital-label">血氧 (SpO2 %)</div>
+                <input type="text" class="vital-value" value="94">
+            </div>
+        </div>
+        <div id="bp-alert" class="alert-box" style="display: block;">
+            ⚠️ <strong>警告：</strong> 收縮壓超過 160，系統已自動通知遠端護理師，給藥按鈕暫時鎖定。
+        </div>
+    </div>
+
+    <div class="step-card">
+        <div class="step-header">
+            <div class="step-number">3</div>
+            <strong>藥品核對 (掃描藥袋)</strong>
+        </div>
+        <button class="scan-btn">📷 掃描藥包/藥盒</button>
+        
+        <div class="medication-verify">
+            <img src="https://via.placeholder.com/80?text=Tablet" alt="藥物照片" class="med-img">
+            <div>
+                <div style="font-weight: bold;">脈優片 5mg (Amlodipine)</div>
+                <div style="font-size: 0.85em; color: #666;">數量：1 錠 | 劑型：圓形白色</div>
+                <div style="color: var(--danger); font-size: 0.8em; margin-top: 5px;">* 請注意血壓值是否符合給藥範圍</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="step-card">
+        <div class="step-header">
+            <div class="step-number">4</div>
+            <strong>給藥紀錄與異常回報</strong>
+        </div>
+        <textarea style="width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 8px;" placeholder="如有拒藥、吞嚥困難或特殊反應請註記..."></textarea>
+        <button class="scan-btn" style="background: #95a5a6; margin-top: 10px;">📷 拍攝給藥/傷口照片 (選填)</button>
+    </div>
+
+</div>
+
+<div class="bottom-actions">
+    <button class="btn btn-call">📞 聯繫護理師</button>
+    <button class="btn btn-submit" disabled style="background: #ccc;">確認給藥</button>
+</div>
+
+</body>
+</html>

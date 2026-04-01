@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>POC 接收端 - 資料顯示</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; padding: 20px; max-width: 600px; margin: auto; }
+        .result-box { border: 2px solid #28a745; padding: 20px; border-radius: 10px; background: #f0fff4; }
+        .data-item { margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px dashed #ccc; }
+        .label { font-weight: bold; color: #2d5a27; display: inline-block; width: 100px; }
+        .value { color: #333; font-family: monospace; word-break: break-all; }
+        .back-btn { margin-top: 20px; display: inline-block; text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+
+    <h2>POC 接收端 (Data Receiver)</h2>
+    <p>以下是從電子錢包傳送過來的資料：</p>
+
+    <div class="result-box">
+        <div class="data-item">
+            <span class="label">病人 ID:</span>
+            <span id="res-id" class="value">讀取中...</span>
+        </div>
+        <div class="data-item">
+            <span class="label">姓名:</span>
+            <span id="res-name" class="value">讀取中...</span>
+        </div>
+        <div class="data-item">
+            <span class="label">性別:</span>
+            <span id="res-gender" class="value">讀取中...</span>
+        </div>
+    </div>
+
+    <a href="javascript:history.back()" class="back-btn">← 返回上一步</a>
+
+    <script>
+        // 當網頁載入完成後執行
+        window.onload = function() {
+            // 1. 取得網址中的查詢字串 (QueryString)
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+
+            // 2. 提取特定的參數值
+            const patientId = urlParams.get('id');
+            const patientName = urlParams.get('name');
+            const patientGender = urlParams.get('gender');
+
+            // 3. 顯示到網頁元素中
+            // 判斷是否有值，若無則顯示「未提供」
+            document.getElementById('res-id').textContent = patientId || "未提供 ID";
+            document.getElementById('res-name').textContent = patientName || "未提供姓名";
+            
+            // 針對性別做簡單的格式化顯示
+            let genderText = patientGender;
+            if (patientGender === 'male') genderText = "男 (Male)";
+            if (patientGender === 'female') genderText = "女 (Female)";
+            
+            document.getElementById('res-gender').textContent = genderText || "未提供性別";
+            
+            // 調試用：在控制台印出結果
+            console.log("接收到的資料:", {
+                id: patientId,
+                name: patientName,
+                gender: patientGender
+            });
+        };
+    </script>
+</body>
+</html>

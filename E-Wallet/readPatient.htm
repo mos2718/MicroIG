@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>電子錢包 Patient 資料讀取器</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 600px; margin: auto; }
+        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #f9f9f9; margin-top: 20px; display: none; }
+        .info-row { margin-bottom: 10px; }
+        .label { font-weight: bold; color: #555; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input[type="file"] { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <h2>電子錢包資料讀取 (FHIR Patient)</h2>
+    <p>請選取位於 <code>C:\E-Wallet</code> 中的 <code>Patient.json</code> 檔案：</p>
+    
+    <input type="file" id="fileInput" accept=".json">
+
+    <div id="patientCard" class="card">
+        <h3>病人基本資料</h3>
+        <div class="info-row">
+            <span class="label">ID (UUID):</span> <span id="disp-id"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">姓名:</span> <span id="disp-name"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">性別:</span> <span id="disp-gender"></span>
+        </div>
+        <div class="info-row">
+            <span class="label">電話:</span> <span id="disp-phone"></span>
+        </div>
+        
+        <hr>
+        <button id="btnTransfer">傳送資料至 poc.htm</button>
+    </div>
+
+    <script>
+        let patientData = null;
+
+        // 監聽檔案上傳
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    patientData = JSON.parse(e.target.result);
+                    displayData(patientData);
+                } catch (err) {
+                    alert("JSON 格式解析失敗！");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // 顯示資料至畫面
+        function displayData(data) {
+            document.getElementById('patientCard').style.display = 'block';
+            
+            // 取得 FHIR 結構中的欄位
+            const id = data.id || "N/A";
+            const name = data.name && data.name[0] ? data.name[0].text : "未知";
+            const gender = data.gender || "unknown";
+            const phone = data.telecom ? data.telecom[0].value : "未提供";
+
+            document.getElementById('disp-id').textContent = id;
+            document.getElementById('disp-name').textContent = name;
+            document.getElementById('disp-gender').textContent = gender;
+            document.getElementById('disp-phone').textContent = phone;
+        }
+
+        // 按鈕點擊事件：跳轉並帶入 QueryString
+        document.getElementById('btnTransfer').addEventListener('click', function() {
+            if (!patientData) return;
+
+            const id = patientData.id;
+            const name = patientData.name[0].text;
+            const gender = patientData.gender;
+
+            // 建立 URLSearchParams
+            const params = new URLSearchParams({
+                id: id,
+                name: name,
+                gender: gender
+            });
+
+            // 跳轉至 poc.htm
+            window.location.href = `poc.htm?${params.toString()}`;
+        });
+    </script>
+</body>
+</html>
